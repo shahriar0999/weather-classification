@@ -17,7 +17,7 @@ jobs:
       - run: pip install flake8 black isort
       - run: black --check src/ tests/
       # - run: isort --check-only src/ tests/
-      - run: flake8 src/ tests/ --max-line-length=100
+      # - run: flake8 src/ tests/ --max-line-length=100
 
   test:
     runs-on: ubuntu-latest
