@@ -1,13 +1,14 @@
 """STEP 4 — Hyperparameter Tuning"""
 
+import logging
+import pickle
+
 import ray
+import xgboost as xgb
+import yaml
 from ray import tune
 from ray.tune.schedulers import ASHAScheduler
-import xgboost as xgb
 from sklearn.metrics import accuracy_score
-import pickle
-import yaml
-import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

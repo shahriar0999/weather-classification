@@ -1,13 +1,14 @@
 """STEP 6 — Monitoring"""
 
-import pandas as pd
-import numpy as np
-import os
 import json
 import logging
-import yaml
+import os
 import pickle
 from datetime import datetime
+
+import numpy as np
+import pandas as pd
+import yaml
 from sklearn.metrics import accuracy_score
 
 logging.basicConfig(level=logging.INFO)

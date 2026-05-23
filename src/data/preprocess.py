@@ -1,14 +1,15 @@
 """STEP 2 — Preprocessing"""
 
-import pandas as pd
-import numpy as np
-import ray
-import pickle
-import os
-import yaml
 import logging
-from sklearn.preprocessing import LabelEncoder, StandardScaler
+import os
+import pickle
+
+import numpy as np
+import pandas as pd
+import ray
+import yaml
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

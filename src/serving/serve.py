@@ -3,16 +3,17 @@ STEP 5 — Model Serving (FIXED)
 FastAPI app is created INSIDE __init__ to avoid Ray serialization error.
 """
 
+import logging
+import pickle
+import time
+from typing import List
+
+import numpy as np
 import ray
-from ray import serve
+import yaml
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, validator
-from typing import List
-import pickle
-import numpy as np
-import yaml
-import logging
-import time
+from ray import serve
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

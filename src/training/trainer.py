@@ -1,13 +1,15 @@
 """STEP 3 — Model Training"""
 
-import pickle
-import yaml
 import logging
 import os
-import mlflow
+import pickle
+
 import mlflow.xgboost
 import xgboost as xgb
+import yaml
 from sklearn.metrics import accuracy_score, classification_report, f1_score
+
+import mlflow
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

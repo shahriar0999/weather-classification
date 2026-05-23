@@ -1,12 +1,13 @@
 """Tests — run: pytest tests/ -v --cov=src"""
 
-import pytest
-import pandas as pd
-import numpy as np
-import pickle
-import yaml
 import os
+import pickle
 import sys
+
+import numpy as np
+import pandas as pd
+import pytest
+import yaml
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
