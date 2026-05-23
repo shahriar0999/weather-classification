@@ -36,3 +36,4 @@ tqdm==4.66.5
 
 # Testing (keep minimal in main req)
 pytest==9.0.3
+pytest-cov==7.1.0
