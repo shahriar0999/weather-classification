@@ -1,0 +1,22 @@
+artifact_path: /home/ray/default/weather-classification/mlruns/149142425438657944/models/m-5acaee27f5544bd8b6071e4fea18e74a/artifacts
+flavors:
+  python_function:
+    data: model.xgb
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.12.13
+  xgboost:
+    code: null
+    data: model.xgb
+    model_class: xgboost.sklearn.XGBClassifier
+    model_format: xgb
+    xgb_version: 3.2.0
+mlflow_version: 3.1.4
+model_id: m-5acaee27f5544bd8b6071e4fea18e74a
+model_size_bytes: 2332787
+model_uuid: m-5acaee27f5544bd8b6071e4fea18e74a
+prompts: null
+run_id: 6f57ed11f1184b19b4ae26c2dd677fa2
+utc_time_created: '2026-05-23 14:02:02.439421'

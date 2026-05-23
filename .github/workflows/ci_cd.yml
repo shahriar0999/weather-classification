@@ -1,0 +1,61 @@
+name: Weather Classification CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with: { python-version: "3.10" }
+      - run: pip install flake8 black isort
+      - run: black --check src/ tests/
+      - run: isort --check-only src/ tests/
+      - run: flake8 src/ tests/ --max-line-length=100
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with: { python-version: "3.10" }
+      - run: pip install -r requirements.txt
+      - run: pytest tests/ --cov=src --cov-report=xml -v
+
+  train:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with: { python-version: "3.10" }
+      - run: pip install -r requirements.txt
+      - run: python src/pipeline/workflow.py --skip-tuning
+      - uses: actions/upload-artifact@v3
+        with:
+          name: weather-model
+          path: models/
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: train
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install anyscale
+      - name: Deploy to Anyscale
+        env:
+          ANYSCALE_CLI_TOKEN: ${{ secrets.ANYSCALE_CLI_TOKEN }}
+        run: |
+          anyscale job submit \
+            --name weather-classifier \
+            --entrypoint "python src/serving/serve.py" \
+            --working-dir . \
+            --wait

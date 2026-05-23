@@ -1,0 +1,13 @@
+{
+  "drift": {
+    "timestamp": "2026-05-23T14:17:10.562463",
+    "drift_score": 0.0,
+    "drift_detected": false,
+    "drifted_features": []
+  },
+  "performance": {
+    "timestamp": "2026-05-23T14:17:10.575993",
+    "accuracy": 0.9155,
+    "alert": false
+  }
+}

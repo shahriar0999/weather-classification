@@ -1,0 +1,10 @@
+artifact_location: /home/ray/default/weather-classification/mlruns/149142425438657944/models/m-5acaee27f5544bd8b6071e4fea18e74a/artifacts
+creation_timestamp: 1779544922431
+experiment_id: '149142425438657944'
+last_updated_timestamp: 1779544926143
+model_id: m-5acaee27f5544bd8b6071e4fea18e74a
+model_type: null
+name: model
+source_run_id: 6f57ed11f1184b19b4ae26c2dd677fa2
+status: 2
+status_message: null

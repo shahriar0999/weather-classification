@@ -1,0 +1,101 @@
+data:
+  raw_path: "data/raw/weather_classification_data.csv"
+  processed_path: "data/processed/weather_processed.csv"
+  test_size: 0.2
+  val_size: 0.1
+  random_state: 42
+  target_column: "Weather Type"
+
+  numeric_features:
+    - "Temperature"
+    - "Humidity"
+    - "Wind Speed"
+    - "Precipitation (%)"
+    - "Atmospheric Pressure"
+    - "UV Index"
+    - "Visibility (km)"
+
+  categorical_features:
+    - "Cloud Cover"
+    - "Season"
+    - "Location"
+
+  outlier_thresholds:
+    Humidity:
+      min: 0
+      max: 100
+    Wind Speed:
+      min: 0
+      max: 200
+    Precipitation (%):
+      min: 0
+      max: 100
+    UV Index:
+      min: 0
+      max: 20
+    Visibility (km):
+      min: 0
+      max: 100
+
+model:
+  name: "xgboost"
+  save_path: "models/weather_model.pkl"
+  scaler_path: "models/scaler.pkl"
+  encoder_path: "models/label_encoders.pkl"
+  target_encoder_path: "models/target_encoder.pkl"
+  params:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.1
+    subsample: 0.8
+    colsample_bytree: 0.8
+    use_label_encoder: false
+    eval_metric: "mlogloss"
+    random_state: 42
+
+training:
+  num_workers: 2
+  use_gpu: false
+
+tuning:
+  num_samples: 20
+  metric: "accuracy"
+  mode: "max"
+  search_space:
+    n_estimators:
+      - 50
+      - 100
+      - 200
+      - 300
+    max_depth:
+      - 3
+      - 4
+      - 5
+      - 6
+      - 8
+    learning_rate:
+      - 0.01
+      - 0.3
+    subsample:
+      - 0.6
+      - 1.0
+    colsample_bytree:
+      - 0.6
+      - 1.0
+
+serving:
+  host: "0.0.0.0"
+  port: 8080
+  num_replicas: 1
+  route_prefix: "/predict"
+
+mlflow:
+  tracking_uri: "mlruns"
+  experiment_name: "weather-classification"
+
+monitoring:
+  reference_data_path: "data/processed/reference_data.csv"
+  drift_threshold: 0.05
+  accuracy_threshold: 0.85
+  report_path: "logs/monitoring"
+  prometheus_port: 8000
