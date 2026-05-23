@@ -19,19 +19,21 @@ def config():
 
 @pytest.fixture
 def sample_df():
-    return pd.DataFrame({
-        "Temperature":          [25.0, -5.0, 35.0, 10.0],
-        "Humidity":             [80.0, 60.0, 90.0, 45.0],
-        "Wind Speed":           [15.0, 30.0,  5.0, 20.0],
-        "Precipitation (%)":    [70.0,  5.0, 50.0, 10.0],
-        "Cloud Cover":          ["overcast", "clear", "partly cloudy", "cloudy"],
-        "Atmospheric Pressure": [1005.0, 1020.0, 1010.0, 1015.0],
-        "UV Index":             [2, 8, 5, 3],
-        "Season":               ["Winter", "Summer", "Spring", "Autumn"],
-        "Visibility (km)":      [4.0, 15.0, 8.0, 10.0],
-        "Location":             ["inland", "coastal", "mountain", "inland"],
-        "Weather Type":         ["Rainy", "Sunny", "Cloudy", "Cloudy"]
-    })
+    return pd.DataFrame(
+        {
+            "Temperature": [25.0, -5.0, 35.0, 10.0],
+            "Humidity": [80.0, 60.0, 90.0, 45.0],
+            "Wind Speed": [15.0, 30.0, 5.0, 20.0],
+            "Precipitation (%)": [70.0, 5.0, 50.0, 10.0],
+            "Cloud Cover": ["overcast", "clear", "partly cloudy", "cloudy"],
+            "Atmospheric Pressure": [1005.0, 1020.0, 1010.0, 1015.0],
+            "UV Index": [2, 8, 5, 3],
+            "Season": ["Winter", "Summer", "Spring", "Autumn"],
+            "Visibility (km)": [4.0, 15.0, 8.0, 10.0],
+            "Location": ["inland", "coastal", "mountain", "inland"],
+            "Weather Type": ["Rainy", "Sunny", "Cloudy", "Cloudy"],
+        }
+    )
 
 
 class TestSchema:
@@ -66,6 +68,7 @@ class TestModel:
         if not os.path.exists(config["model"]["save_path"]):
             pytest.skip("Model not trained yet")
         from sklearn.metrics import accuracy_score
+
         with open(config["model"]["save_path"], "rb") as f:
             model = pickle.load(f)
         with open("data/processed/data.pkl", "rb") as f:

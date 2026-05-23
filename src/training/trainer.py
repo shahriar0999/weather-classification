@@ -24,26 +24,30 @@ def train_model(data: dict, config: dict):
 
         model = xgb.XGBClassifier(**params)
         model.fit(
-            data["X_train"], data["y_train"],
+            data["X_train"],
+            data["y_train"],
             eval_set=[(data["X_val"], data["y_val"])],
-            verbose=50
+            verbose=50,
         )
 
         y_pred = model.predict(data["X_test"])
-        acc    = accuracy_score(data["y_test"], y_pred)
-        f1     = f1_score(data["y_test"], y_pred, average="weighted")
-        val_acc= accuracy_score(data["y_val"], model.predict(data["X_val"]))
+        acc = accuracy_score(data["y_test"], y_pred)
+        f1 = f1_score(data["y_test"], y_pred, average="weighted")
+        val_acc = accuracy_score(data["y_val"], model.predict(data["X_val"]))
 
         logger.info(f"Val Acc : {val_acc:.4f}")
         logger.info(f"Test Acc: {acc:.4f}")
         logger.info(f"F1      : {f1:.4f}")
-        logger.info("\n" + classification_report(
-            data["y_test"], y_pred, target_names=data["target_classes"]
-        ))
+        logger.info(
+            "\n"
+            + classification_report(
+                data["y_test"], y_pred, target_names=data["target_classes"]
+            )
+        )
 
-        mlflow.log_metric("val_accuracy",  val_acc)
+        mlflow.log_metric("val_accuracy", val_acc)
         mlflow.log_metric("test_accuracy", acc)
-        mlflow.log_metric("test_f1",       f1)
+        mlflow.log_metric("test_f1", f1)
 
         with open(config["model"]["save_path"], "wb") as f:
             pickle.dump(model, f)

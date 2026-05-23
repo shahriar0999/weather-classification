@@ -64,12 +64,14 @@ def preprocess(df: pd.DataFrame, config: dict) -> dict:
 
     # Train / Val / Test split
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=cfg["test_size"],
-        random_state=cfg["random_state"], stratify=y
+        X, y, test_size=cfg["test_size"], random_state=cfg["random_state"], stratify=y
     )
     X_train, X_val, y_train, y_val = train_test_split(
-        X_train, y_train, test_size=cfg["val_size"],
-        random_state=cfg["random_state"], stratify=y_train
+        X_train,
+        y_train,
+        test_size=cfg["val_size"],
+        random_state=cfg["random_state"],
+        stratify=y_train,
     )
 
     logger.info(f"Train:{len(X_train)} Val:{len(X_val)} Test:{len(X_test)}")
@@ -77,10 +79,14 @@ def preprocess(df: pd.DataFrame, config: dict) -> dict:
     # Save processed data
     os.makedirs("data/processed", exist_ok=True)
     data = {
-        "X_train": X_train, "X_val": X_val,   "X_test":  X_test,
-        "y_train": y_train, "y_val": y_val,   "y_test":  y_test,
-        "feature_names":  all_features,
-        "target_classes": list(target_le.classes_)
+        "X_train": X_train,
+        "X_val": X_val,
+        "X_test": X_test,
+        "y_train": y_train,
+        "y_val": y_val,
+        "y_test": y_test,
+        "feature_names": all_features,
+        "target_classes": list(target_le.classes_),
     }
     with open("data/processed/data.pkl", "wb") as f:
         pickle.dump(data, f)

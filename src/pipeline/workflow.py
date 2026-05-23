@@ -9,10 +9,10 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from src.data.ingest      import load_data, validate_data
-from src.data.preprocess  import preprocess
+from src.data.ingest import load_data, validate_data
+from src.data.preprocess import preprocess
 from src.training.trainer import train_model
-from src.tuning.tune      import run_tuning
+from src.tuning.tune import run_tuning
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,9 +28,11 @@ def run_pipeline(config_path="config/config.yaml", skip_tuning=False):
     logger.info("=" * 50)
     logger.info("STEP 1 — Data Ingestion")
     logger.info("=" * 50)
-    df = ray.get(validate_data.remote(
-        ray.get(load_data.remote(config["data"]["raw_path"])), config
-    ))
+    df = ray.get(
+        validate_data.remote(
+            ray.get(load_data.remote(config["data"]["raw_path"])), config
+        )
+    )
 
     # STEP 2 — Preprocess
     logger.info("=" * 50)
@@ -57,7 +59,9 @@ def run_pipeline(config_path="config/config.yaml", skip_tuning=False):
 
     # Accuracy gate
     if metrics["test_accuracy"] < config["monitoring"]["accuracy_threshold"]:
-        logger.error(f"❌ Accuracy {metrics['test_accuracy']:.4f} below threshold. Aborting.")
+        logger.error(
+            f"❌ Accuracy {metrics['test_accuracy']:.4f} below threshold. Aborting."
+        )
         return
 
     # STEP 5 — Deploy (lazy import fixes serialization error)
@@ -65,6 +69,7 @@ def run_pipeline(config_path="config/config.yaml", skip_tuning=False):
     logger.info("STEP 5 — Deploying with Ray Serve")
     logger.info("=" * 50)
     from src.serving.serve import deploy
+
     deploy(config)
 
     logger.info("=" * 50)
@@ -79,8 +84,9 @@ def run_pipeline(config_path="config/config.yaml", skip_tuning=False):
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config",       default="config/config.yaml")
-    parser.add_argument("--skip-tuning",  action="store_true")
+    parser.add_argument("--config", default="config/config.yaml")
+    parser.add_argument("--skip-tuning", action="store_true")
     args = parser.parse_args()
     run_pipeline(config_path=args.config, skip_tuning=args.skip_tuning)

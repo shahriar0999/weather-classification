@@ -39,11 +39,13 @@ def validate_data(df: pd.DataFrame, config: dict) -> pd.DataFrame:
 
     dupes = df.duplicated().sum()
     logger.info(f"Duplicate rows: {dupes}")
-    logger.info(f"Class distribution:\n{df[config['data']['target_column']].value_counts()}")
+    logger.info(
+        f"Class distribution:\n{df[config['data']['target_column']].value_counts()}"
+    )
 
     for col, bounds in config["data"]["outlier_thresholds"].items():
         if col in df.columns:
-            low  = (df[col] < bounds["min"]).sum()
+            low = (df[col] < bounds["min"]).sum()
             high = (df[col] > bounds["max"]).sum()
             if low + high > 0:
                 logger.warning(f"Outliers in '{col}': {low} low, {high} high")
@@ -54,7 +56,9 @@ if __name__ == "__main__":
     ray.init(ignore_reinit_error=True)
     with open("config/config.yaml") as f:
         config = yaml.safe_load(f)
-    df = ray.get(validate_data.remote(
-        ray.get(load_data.remote(config["data"]["raw_path"])), config
-    ))
+    df = ray.get(
+        validate_data.remote(
+            ray.get(load_data.remote(config["data"]["raw_path"])), config
+        )
+    )
     print(df.head())
