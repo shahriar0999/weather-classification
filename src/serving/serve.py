@@ -56,7 +56,15 @@ class BatchOutput(BaseModel):
     total_latency_ms: float
 
 
-@serve.deployment(num_replicas=1, ray_actor_options={"num_cpus": 1})
+# @serve.deployment(num_replicas=1, ray_actor_options={"num_cpus": 1})
+# class WeatherClassifier:
+@serve.deployment(
+    num_replicas=1,
+    ray_actor_options={"num_cpus": 1},
+    runtime_env={
+        "pip": ["xgboost", "scikit-learn", "pydantic", "fastapi", "pyyaml", "numpy"]
+    },
+)
 class WeatherClassifier:
 
     def __init__(self):
