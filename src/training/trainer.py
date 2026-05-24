@@ -17,7 +17,9 @@ os.makedirs("models", exist_ok=True)
 
 
 def train_model(data: dict, config: dict):
-    mlflow.set_tracking_uri(config["mlflow"]["tracking_uri"])
+    mlflow.set_tracking_uri(                                               # ✅ fixed
+        os.environ.get("MLFLOW_TRACKING_URI", config["mlflow"]["tracking_uri"])
+    )
     mlflow.set_experiment(config["mlflow"]["experiment_name"])
 
     with mlflow.start_run(run_name="xgboost-weather-v1"):
@@ -53,7 +55,12 @@ def train_model(data: dict, config: dict):
 
         with open(config["model"]["save_path"], "wb") as f:
             pickle.dump(model, f)
-        mlflow.xgboost.log_model(model, "model")
+
+        mlflow.xgboost.log_model(                                          # ✅ fixed
+            model,
+            name="model",
+            input_example=data["X_test"][:5],
+        )
 
     return model, {"val_accuracy": val_acc, "test_accuracy": acc, "test_f1": f1}
 
