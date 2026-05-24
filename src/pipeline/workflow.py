@@ -5,6 +5,7 @@ import os
 import pickle
 import sys
 
+import mlflow  # ✅ moved to top-level imports
 import ray
 import yaml
 
@@ -21,6 +22,9 @@ logger = logging.getLogger(__name__)
 
 def run_pipeline(config_path="config/config.yaml", skip_tuning=False):
     ray.init(ignore_reinit_error=True)
+
+    # ✅ Set MLflow URI immediately after Ray init before it can override
+    mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI", "file:///tmp/mlruns"))
 
     with open(config_path) as f:
         config = yaml.safe_load(f)
