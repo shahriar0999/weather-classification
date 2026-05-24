@@ -60,12 +60,11 @@ class BatchOutput(BaseModel):
 # class WeatherClassifier:
 @serve.deployment(
     num_replicas=1,
-    ray_actor_options={"num_cpus": 1},
-    runtime_env={
-        "pip": ["xgboost", "scikit-learn", "pydantic", "fastapi", "pyyaml", "numpy"]
+    ray_actor_options={
+        "num_cpus": 1,
+        "runtime_env": {"pip": ["xgboost", "scikit-learn", "pydantic", "fastapi", "pyyaml", "numpy"]},
     },
 )
-class WeatherClassifier:
 
     def __init__(self):
         # ✅ FastAPI created INSIDE __init__ — not at module level
