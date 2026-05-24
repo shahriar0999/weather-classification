@@ -1,7 +1,4 @@
-"""
-STEP 5 — Model Serving (FIXED)
-FastAPI app is created INSIDE __init__ to avoid Ray serialization error.
-"""
+"""STEP 5 — Model Serving"""
 
 import logging
 import pickle
@@ -9,7 +6,6 @@ import time
 from typing import List
 
 import numpy as np
-import ray
 import yaml
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, validator
@@ -17,6 +13,8 @@ from ray import serve
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+fastapi_app = FastAPI(title="Weather Classification API", version="1.0.0")
 
 
 class WeatherInput(BaseModel):
@@ -56,24 +54,26 @@ class BatchOutput(BaseModel):
     total_latency_ms: float
 
 
-# @serve.deployment(num_replicas=1, ray_actor_options={"num_cpus": 1})
-# class WeatherClassifier:
 @serve.deployment(
     num_replicas=1,
     ray_actor_options={
         "num_cpus": 1,
         "runtime_env": {
-            "pip": ["xgboost", "scikit-learn", "pydantic", "fastapi", "pyyaml", "numpy"]
+            "pip": [
+                "xgboost",
+                "scikit-learn",
+                "pydantic",
+                "fastapi",
+                "pyyaml",
+                "numpy",
+            ]
         },
     },
 )
+@serve.ingress(fastapi_app)
 class WeatherClassifier:
 
     def __init__(self):
-        # ✅ FastAPI created INSIDE __init__ — not at module level
-        self.app = FastAPI(title="Weather Classification API", version="1.0.0")
-        self._register_routes()
-
         with open("config/config.yaml") as f:
             self.config = yaml.safe_load(f)
 
@@ -91,31 +91,29 @@ class WeatherClassifier:
         self.cat_cols = self.config["data"]["categorical_features"]
         logger.info(f"✅ Model loaded. Classes: {self.classes}")
 
-    def _register_routes(self):
+    @fastapi_app.get("/health")
+    async def health(self):
+        return {"status": "healthy"}
 
-        @self.app.get("/health")
-        async def health():
-            return {"status": "healthy"}
+    @fastapi_app.get("/model-info")
+    async def model_info(self):
+        return {
+            "classes": self.classes,
+            "num_features": len(self.numeric_cols + self.cat_cols),
+        }
 
-        @self.app.get("/model-info")
-        async def model_info():
-            return {
-                "classes": self.classes,
-                "num_features": len(self.numeric_cols + self.cat_cols),
-            }
+    @fastapi_app.post("/predict", response_model=WeatherOutput)
+    async def predict(self, inp: WeatherInput):
+        return await self._predict(inp)
 
-        @self.app.post("/predict", response_model=WeatherOutput)
-        async def predict(inp: WeatherInput):
-            return await self._predict(inp)
-
-        @self.app.post("/batch", response_model=BatchOutput)
-        async def batch(inp: BatchInput):
-            t0 = time.time()
-            results = [await self._predict(r) for r in inp.records]
-            return BatchOutput(
-                predictions=results,
-                total_latency_ms=round((time.time() - t0) * 1000, 2),
-            )
+    @fastapi_app.post("/batch", response_model=BatchOutput)
+    async def batch(self, inp: BatchInput):
+        t0 = time.time()
+        results = [await self._predict(r) for r in inp.records]
+        return BatchOutput(
+            predictions=results,
+            total_latency_ms=round((time.time() - t0) * 1000, 2),
+        )
 
     def _build_features(self, inp: WeatherInput) -> np.ndarray:
         col_map = {
@@ -163,21 +161,9 @@ class WeatherClassifier:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    async def __call__(self, request):
-        return await self.app(request.scope, request.receive, request.send)
-
 
 def deploy(config: dict):
-    ray.init(ignore_reinit_error=True)
-    serve.start(
-        http_options={
-            "host": config["serving"]["host"],
-            "port": config["serving"]["port"],
-        }
-    )
-    WeatherClassifier.bind()
-    logger.info(f"API  → http://0.0.0.0:{config['serving']['port']}")
-    logger.info(f"Docs → http://0.0.0.0:{config['serving']['port']}/docs")
+    pass  # deployment now handled by CI/CD
 
 
 if __name__ == "__main__":
