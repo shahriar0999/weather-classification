@@ -7,7 +7,6 @@ on:
     branches: [main]
 
 jobs:
-
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -16,8 +15,6 @@ jobs:
         with: { python-version: "3.10" }
       - run: pip install flake8 black isort
       - run: black --check src/ tests/
-      # - run: isort --check-only src/ tests/
-      # - run: flake8 src/ tests/ --max-line-length=100
 
   test:
     runs-on: ubuntu-latest
@@ -36,18 +33,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with: { python-version: "3.10" }
-      - run: pip install -r requirements.txt
-      - run: pip install "ray[serve]"
-
-      - name: Create Ray home directory        # ✅ add this step
+      - run: pip install -r requirements.txt        # ✅ ray[serve] removed
+      - name: Create Ray home directory
         run: sudo mkdir -p /home/ray && sudo chmod 777 /home/ray
-
       - name: Run training pipeline
         env:
           MLFLOW_TRACKING_URI: file://${{ github.workspace }}/mlruns
           RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO: "0"
         run: python src/pipeline/workflow.py --skip-tuning
-
       - uses: actions/upload-artifact@v4
         with:
           name: weather-model
@@ -63,19 +56,16 @@ jobs:
         with: { python-version: "3.10" }
       - run: pip install -r requirements.txt
       - run: pip install --upgrade anyscale
-
       - name: Download trained model
         uses: actions/download-artifact@v4
         with:
           name: weather-model
           path: models/
-
-      - name: Deploy to Anyscale
+      - name: Deploy persistent service to Anyscale   # ✅ service deploy
         env:
           ANYSCALE_CLI_TOKEN: ${{ secrets.ANYSCALE_CLI_TOKEN }}
         run: |
-          anyscale job submit \
+          anyscale service deploy \
             --name weather-classifier \
             --working-dir . \
-            --wait \
-            -- python src/serving/serve.py
+            src/serving/serve.py

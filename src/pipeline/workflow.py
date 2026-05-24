@@ -70,12 +70,12 @@ def run_pipeline(config_path="config/config.yaml", skip_tuning=False):
         return
 
     # STEP 5 — Deploy (lazy import fixes serialization error)
-    logger.info("=" * 50)
-    logger.info("STEP 5 — Deploying with Ray Serve")
-    logger.info("=" * 50)
-    from src.serving.serve import deploy
+    # logger.info("=" * 50)
+    # logger.info("STEP 5 — Deploying with Ray Serve")
+    # logger.info("=" * 50)
+    # from src.serving.serve import deploy
 
-    deploy(config)
+    # deploy(config)
 
     logger.info("=" * 50)
     logger.info("✅ PIPELINE COMPLETE")
