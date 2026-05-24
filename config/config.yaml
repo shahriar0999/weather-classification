@@ -90,7 +90,7 @@ serving:
   route_prefix: "/predict"
 
 mlflow:
-  tracking_uri: "mlruns"
+  tracking_uri: "file:///tmp/mlruns"
   experiment_name: "weather-classification"
 
 monitoring:
