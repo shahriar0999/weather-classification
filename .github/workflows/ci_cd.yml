@@ -37,6 +37,7 @@ jobs:
       - uses: actions/setup-python@v4
         with: { python-version: "3.10" }
       - run: pip install -r requirements.txt
+      - run: pip install "ray[serve]"
 
       - name: Create Ray home directory        # ✅ add this step
         run: sudo mkdir -p /home/ray && sudo chmod 777 /home/ray
