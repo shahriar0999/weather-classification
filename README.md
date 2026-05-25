@@ -14,29 +14,40 @@ The model classifies weather into four categories: Cloudy, Rainy, Snowy, and Sun
 
 ```
 weather-classification/
-├── config/
-│   └── config.yaml              # All pipeline configuration
-├── data/
-│   ├── raw/                     # Raw input data
-│   └── processed/               # Preprocessed data
-├── models/                      # Saved model artifacts
-├── src/
-│   ├── data/
-│   │   ├── ingest.py            # Data loading and validation
-│   │   └── preprocess.py        # Feature engineering and scaling
-│   ├── training/
-│   │   └── trainer.py           # Model training and MLflow logging
-│   ├── tuning/
-│   │   └── tune.py              # Hyperparameter tuning with Ray Tune
-│   ├── serving/
-│   │   └── serve.py             # Ray Serve API deployment
-│   └── pipeline/
-│       └── workflow.py          # Full pipeline orchestration
-├── tests/                       # Unit and integration tests
 ├── .github/
 │   └── workflows/
-│       └── ci.yml               # GitHub Actions CI/CD pipeline
-└── requirements.txt
+│       └── ci_cd.yml                  # GitHub Actions CI/CD pipeline
+├── config/
+│   └── config.yaml                    # All pipeline configuration
+├── data/                              # Raw and processed data
+├── logs/
+│   └── monitoring/                    # Monitoring reports
+├── models/
+│   ├── weather_model.pkl              # Trained XGBoost model
+│   ├── scaler.pkl                     # Feature scaler
+│   ├── label_encoders.pkl             # Categorical encoders
+│   └── target_encoder.pkl             # Target label encoder
+├── mlruns/                            # MLflow experiment tracking data
+├── notebooks/                         # Exploratory notebooks
+├── src/
+│   ├── data/
+│   │   ├── ingest.py                  # Data loading and validation
+│   │   └── preprocess.py             # Feature engineering and scaling
+│   ├── monitoring/
+│   │   └── monitor.py                # Drift and accuracy monitoring
+│   ├── pipeline/
+│   │   └── workflow.py               # Full pipeline orchestration
+│   ├── serving/
+│   │   └── serve.py                  # Ray Serve API deployment
+│   ├── training/
+│   │   └── trainer.py                # Model training and MLflow logging
+│   └── tuning/
+│       └── tune.py                   # Hyperparameter tuning with Ray Tune
+├── tests/
+│   └── test_pipeline.py              # Unit and integration tests
+├── Dockerfile                         # Container definition
+├── requirements.txt
+└── run_serve.py                       # Local serving entry point
 ```
 
 
